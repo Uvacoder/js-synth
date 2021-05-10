@@ -88,6 +88,7 @@
 					id="waveform-sine"
 					name="waveform"
 					value="sine"
+					checked
 				/>
 				<label for="waveform-sine">Sine</label>
 
@@ -96,7 +97,6 @@
 					id="waveform-square"
 					name="waveform"
 					value="square"
-					checked
 				/>
 				<label for="waveform-square">Square</label>
 
@@ -118,41 +118,6 @@
 			</div>
 
 			<div class="controls-box">
-				<input
-					type="radio"
-					id="filterform-lowpass"
-					name="filterform"
-					value="lowpass"
-					checked
-				/>
-				<label for="filterform-lowpass">Lowpass</label>
-
-				<input
-					type="radio"
-					id="filterform-highpass"
-					name="filterform"
-					value="highpass"
-				/>
-				<label for="filterform-highpass">Highpass</label>
-
-				<input
-					type="radio"
-					id="filterform-bandpass"
-					name="filterform"
-					value="bandpass"
-				/>
-				<label for="filterform-bandpass">Bandpass</label>
-
-				<input
-					type="radio"
-					id="filterform-bandstop"
-					name="filterform"
-					value="notch"
-				/>
-				<label for="filterform-bandstop">Bandstop</label>
-			</div>
-
-			<div class="controls-box">
 				<div class="range">
 					<label for="pitch">Pitch</label>
 					<input
@@ -162,7 +127,7 @@
 						data-control-name="pitch"
 						min="-1"
 						max="8"
-						value="1"
+						value="3"
 					/>
 				</div>
 
@@ -190,7 +155,7 @@
 						min="0"
 						max="5"
 						step="0.1"
-						value="2"
+						value="0"
 					/>
 				</div>
 
@@ -201,9 +166,9 @@
 						id="sustain"
 						type="range"
 						data-control-name="sustain"
-						min="0"
+						min="1"
 						max="100"
-						value="75"
+						value="50"
 					/>
 				</div>
 
@@ -217,7 +182,7 @@
 						min="0"
 						max="10"
 						step="0.1"
-						value="3"
+						value="0"
 					/>
 				</div>
 				<div class="range">
@@ -246,8 +211,51 @@
 						value="0"
 					/>
 				</div>
+			</div>
+			<details class="controls-box">
+				<summary>Filter</summary>
+				<input
+					type="radio"
+					id="filterform-none"
+					name="filterform"
+					value="none"
+					checked
+				/>
+				<label for="filterform-none">None</label>
+
+				<input
+					type="radio"
+					id="filterform-lowpass"
+					name="filterform"
+					value="lowpass"
+				/>
+				<label for="filterform-lowpass">Lowpass</label>
+
+				<input
+					type="radio"
+					id="filterform-highpass"
+					name="filterform"
+					value="highpass"
+				/>
+				<label for="filterform-highpass">Highpass</label>
+
+				<input
+					type="radio"
+					id="filterform-bandpass"
+					name="filterform"
+					value="bandpass"
+				/>
+				<label for="filterform-bandpass">Bandpass</label>
+
+				<input
+					type="radio"
+					id="filterform-bandstop"
+					name="filterform"
+					value="notch"
+				/>
+				<label for="filterform-bandstop">Bandstop</label>
 				<div class="range">
-					<label for="filterfreq">Filter Freq</label>
+					<label for="filterfreq">Freq</label>
 					<input
 						name="filterfreq"
 						id=""
@@ -260,7 +268,7 @@
 					/>
 				</div>
 				<div class="range">
-					<label for="filterq">Filter Q</label>
+					<label for="filterq">Q</label>
 					<input
 						name="filterq"
 						id="filterq"
@@ -298,7 +306,7 @@
 						value="2"
 					/>
 				</div>
-			</div>
+			</details>
 		</form>
 		<section class="keyboard">
 			<button class="white" data-note="c" label="C">
@@ -332,15 +340,19 @@
 
 		<footer>
 			made with &lt;3<br />
-			<a href="https://iamschulz.com/" target="_blank" rel="noopener">
-				Daniel Schulz</a
-			><br />
-			(<a
+			<a
+				href="https://iamschulz.com/building-a-synthesizer-in-javascript/"
+				target="_blank"
+				rel="noopener"
+			>
+				Blog Post</a
+			>
+			<a
 				href="https://github.com/iamschulz/js-synth"
 				target="_blank"
 				rel="noopener"
 				>Code</a
-			>)
+			>
 		</footer>
 
 		<script src="./script.js" type="module" defer></script>

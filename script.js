@@ -3,46 +3,46 @@ import Keys from './keys.js';
 
 class Synth {
 	waveSine(n) {
-		if( n == 0 ) {
+		if (n == 0) {
 			return 0;
-		} else if( n == 1 ) {
-			return 1;// - this.pwm/100;
+		} else if (n == 1) {
+			return 1; // - this.pwm/100;
 		} else {
-			return (0.1/n) * this.pwm/100;
+			return ((0.1 / n) * this.pwm) / 100;
 		}
 	}
 	waveSquare(n) {
-		var m = (this.pwm/110)+1;
-		if( n == 0 ) {
+		var m = this.pwm / 110 + 1;
+		if (n == 0) {
 			return m;
-		} else if ( n&1 == 1 ) {
-			return ( 2 / (n * Math.PI) ) * Math.sin(n * Math.PI * m / 2);
+		} else if (n & (1 == 1)) {
+			return (2 / (n * Math.PI)) * Math.sin((n * Math.PI * m) / 2);
 		} else {
 			return 0;
 		}
 	}
 	waveSaw(n) {
-		var m = this.pwm/100;
-		if( n == 0 ) {
+		var m = this.pwm / 100;
+		if (n == 0) {
 			return 1;
-		}
-		else if( n&1 == 1 ) {
-			return (m-1) / (n * Math.PI);
+		} else if (n & (1 == 1)) {
+			return (m - 1) / (n * Math.PI);
 		} else {
-			return (m-2) / (n * Math.PI);
+			return (m - 2) / (n * Math.PI);
 		}
 	}
 	waveTriangle(n) {
-		if( n != 0 )
-		{
-			var m = this.pwm/10;
-			if( m < 2 ) {
+		if (n != 0) {
+			var m = this.pwm / 10;
+			if (m < 2) {
 				m = 2;
 			}
-			return ( ( Math.pow(-1, n) * Math.pow(m, 2) ) / ( Math.pow(n, 2) * (m - 1) * Math.pow(Math.PI, 2) ) ) * Math.sin( ( n * (m - 1) * Math.PI ) / m );
-		}
-		else
-		{
+			return (
+				((Math.pow(-1, n) * Math.pow(m, 2)) /
+					(Math.pow(n, 2) * (m - 1) * Math.pow(Math.PI, 2))) *
+				Math.sin((n * (m - 1) * Math.PI) / m)
+			);
+		} else {
 			return 0;
 		}
 	}
@@ -52,22 +52,21 @@ class Synth {
 		var real = new Float32Array(samples);
 		var imag = new Float32Array(samples);
 
-
-		for( var i = 0; i<samples; i++) {
-			switch ( this.wave ) {
-				case "sine":
+		for (var i = 0; i < samples; i++) {
+			switch (this.wave) {
+				case 'sine':
 					real[i] = this.waveSine(i);
 					imag[i] = 0;
 					break;
-				case "square":
+				case 'square':
 					real[i] = this.waveSquare(i);
 					imag[i] = 0;
 					break;
-				case "triangle":
+				case 'triangle':
 					real[i] = 0;
 					imag[i] = this.waveTriangle(i);
 					break;
-				case "sawtooth":
+				case 'sawtooth':
 					real[i] = 0;
 					imag[i] = this.waveSaw(i);
 					break;
@@ -104,18 +103,18 @@ class Synth {
 
 	// See https://developer.mozilla.org/en-US/docs/Web/API/WaveShaperNode
 	makeDistortionCurve(amount) {
-	  var k = typeof amount === 'number' ? amount : 50,
-		n_samples = 44100,
-		curve = new Float32Array(n_samples),
-		deg = Math.PI / 180,
-		i = 0,
-		x;
-	  for ( ; i < n_samples; ++i ) {
-		x = i * 2 / n_samples - 1;
-		curve[i] = ( 3 + k ) * x * 20 * deg / ( Math.PI + k * Math.abs(x) );
-	  }
-	  return curve;
-	};
+		var k = typeof amount === 'number' ? amount : 50,
+			n_samples = 44100,
+			curve = new Float32Array(n_samples),
+			deg = Math.PI / 180,
+			i = 0,
+			x;
+		for (; i < n_samples; ++i) {
+			x = (i * 2) / n_samples - 1;
+			curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+		}
+		return curve;
+	}
 	/**
 	 * Called when a note starts playing
 	 *
@@ -167,10 +166,10 @@ class Synth {
 		var last_node = release;
 
 		// distortion
-		if( this.distortion != 0 ) {
+		if (this.distortion != 0) {
 			last_node.connect(distortion);
 			distortion.curve = this.makeDistortionCurve(this.distortion);
-			switch( this.oversample ) {
+			switch (this.oversample) {
 				case 0:
 					distortion.oversample = 'none';
 					break;
@@ -186,25 +185,31 @@ class Synth {
 		}
 
 		// filter!
-
-		if( this.filterfreq != 1000 ) {
+		if (this.filterfreq <= 1000) {
 			last_node.connect(biquadFilter);
-			biquadFilter.type = this.filterform;
-			biquadFilter.frequency.value = this.filterfreq;
-			biquadFilter.Q.value = this.filterq;
+			biquadFilter.type =
+				this.filterform === 'none' ? 'lowpass' : this.filterform;
+			biquadFilter.frequency.value =
+				this.filterform === 'none' ? 1000 : this.filterfreq;
+			biquadFilter.Q.value =
+				this.filterform === 'none' ? 0 : this.filterq;
 			last_node = biquadFilter;
 		}
 
 		// reverb!
-		if( this.reverb != 0) {
+		if (this.reverb !== 0) {
 			last_node.connect(reverbNode);
 
 			var c_buffer;
-			c_buffer = ctx.createBuffer(2, 48000*2*3, 48000); // 3 second reverb
-			for(var channel_index=0; channel_index<c_buffer.numberOfChannels; channel_index+=1) {
+			c_buffer = ctx.createBuffer(2, 48000 * 2 * 3, 48000); // 3 second reverb
+			for (
+				var channel_index = 0;
+				channel_index < c_buffer.numberOfChannels;
+				channel_index += 1
+			) {
 				var c_data = c_buffer.getChannelData(channel_index);
-				for( var i = 0; i < c_data.length; i++ ) {
-					c_data[i] = (Math.random() * 2 * (1 - (i/c_data.length))) - 1;
+				for (var i = 0; i < c_data.length; i++) {
+					c_data[i] = Math.random() * 2 * (1 - i / c_data.length) - 1;
 				}
 			}
 			reverbNode.buffer = c_buffer;
